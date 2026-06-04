@@ -19,9 +19,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <Providers>
-          <Nav />
-          {children}
-          <Footer />
+          <div className="bg-stadium" aria-hidden="true" />
+          <div className="page">
+            <Nav />
+            {children}
+            <Footer />
+          </div>
         </Providers>
       </body>
     </html>

@@ -23,19 +23,19 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-/* World Cup stadium photo on a fixed-positioned layer (not background-attachment:
-   fixed, which is unreliable on iOS/mobile and caused the image to disappear).
-   The dark gradient over it keeps text and cards readable. */
-body::before {
-  content: '';
+/* World Cup stadium photo on a fixed full-screen layer. Uses a real element at a
+   non-negative z-index with page content stacked above it — iOS Safari often
+   fails to render fixed elements that have a negative z-index. */
+.bg-stadium {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
   background:
     linear-gradient(180deg, rgba(5,14,26,.80) 0%, rgba(5,14,26,.40) 30%, rgba(5,14,26,.48) 62%, rgba(5,14,26,.88) 100%),
     url('/stadium.jpg') center center / cover no-repeat;
 }
+.page { position: relative; z-index: 1; }
 a { color: inherit; text-decoration: none; }
 button, input { font: inherit; }
 
