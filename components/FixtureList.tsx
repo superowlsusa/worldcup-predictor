@@ -122,6 +122,11 @@ function PredictionCard({ fixture, prediction, disabled, signedIn, onSave }: {
   const homeName = translateTeam(fixture.home_team, lang);
   const awayName = translateTeam(fixture.away_team, lang);
 
+  // "Dirty" = the boxes differ from the saved pick, so the button invites an update.
+  const isDirty = !!prediction && (home !== prediction.predicted_home_score || away !== prediction.predicted_away_score);
+  const btnClass = !signedIn ? 'secondary' : (!prediction || isDirty) ? 'save' : 'saved';
+  const btnLabel = !signedIn ? t('fx.btnSignInToSave') : !prediction ? t('fx.btnSave') : isDirty ? t('fx.btnUpdate') : t('fx.btnSaved');
+
   return (
     <div className="card fixture">
       <div className="fixture-head">
@@ -142,10 +147,13 @@ function PredictionCard({ fixture, prediction, disabled, signedIn, onSave }: {
         </div>
       </div>
       <div className="save-row">
-        <button className={`btn ${!signedIn ? 'secondary' : prediction ? 'saved' : 'save'}`} onClick={() => onSave(fixture, home, away)} disabled={disabled}>
-          {!signedIn ? t('fx.btnSignInToSave') : prediction ? t('fx.btnSaved') : t('fx.btnSave')}
+        <button className={`btn ${btnClass}`} onClick={() => onSave(fixture, home, away)} disabled={disabled}>
+          {btnLabel}
         </button>
       </div>
+      {signedIn && !locked && fixture.status !== 'final' && (
+        <p style={{ textAlign: 'center', fontSize: 12.5, margin: 0 }}>{t('fx.changeHint')}</p>
+      )}
       <div className="row" style={{ flexWrap: 'wrap', justifyContent: 'center' }}>
         {prediction && <span className="pill">{t('fx.yourPick')}: {prediction.predicted_home_score}-{prediction.predicted_away_score}</span>}
         {actual && <span className="pill pill-good">{t('fx.final')}: {actual}</span>}

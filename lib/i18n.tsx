@@ -36,6 +36,8 @@ const en: Dict = {
   'fx.btnSignInToSave': 'Sign in to save',
   'fx.btnSave': 'Save prediction',
   'fx.btnSaved': '✓ Prediction saved',
+  'fx.btnUpdate': 'Update prediction',
+  'fx.changeHint': 'You can change your prediction until 1 hour before kick-off.',
   'fx.lockNote': 'Predictions lock one hour before kick-off.',
 
   'auth.join': 'Join the league',
@@ -134,6 +136,8 @@ const es: Dict = {
   'fx.btnSignInToSave': 'Inicia sesión para guardar',
   'fx.btnSave': 'Guardar predicción',
   'fx.btnSaved': '✓ Predicción guardada',
+  'fx.btnUpdate': 'Actualizar predicción',
+  'fx.changeHint': 'Puedes cambiar tu predicción hasta 1 hora antes del inicio.',
   'fx.lockNote': 'Las predicciones se bloquean una hora antes del inicio.',
 
   'auth.join': 'Únete a la liga',
