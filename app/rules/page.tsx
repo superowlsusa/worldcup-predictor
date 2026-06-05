@@ -14,7 +14,8 @@ export default function RulesPage() {
         <div className="card span-4"><h2>{t('rules.exactTitle')}</h2><p>{t('rules.exactBody')} <strong>{t('rules.pts3')}</strong>.</p></div>
         <div className="card span-4"><h2>{t('rules.outcomeTitle')}</h2><p>{t('rules.outcomeBody')} <strong>{t('rules.pts1')}</strong>.</p></div>
         <div className="card span-4"><h2>{t('rules.lockTitle')}</h2><p>{t('rules.lockBody')} <strong>{t('rules.oneHour')}</strong>.</p></div>
-        <div className="card span-12"><h2>{t('rules.koTitle')}</h2><p>{t('rules.koBody')}</p></div>
+        <div className="card span-6"><h2>{t('rules.koTitle')}</h2><p>{t('rules.koBody')}</p></div>
+        <div className="card span-6"><h2>{t('rules.koScoreTitle')}</h2><p>{t('rules.koScoreBody')}</p></div>
         <div className="card span-4"><h2>{t('rules.joinTitle')}</h2><p>{t('rules.joinBody')}</p></div>
         <div className="card span-8">
           <h2>{t('rules.payoutTitle')}</h2>
