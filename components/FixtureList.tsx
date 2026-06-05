@@ -12,6 +12,18 @@ function prettyDate(utc: string, lang: Lang) {
   return new Intl.DateTimeFormat(localeFor(lang), { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(utc));
 }
 
+// Human-friendly time remaining until the prediction lock (1h before kick-off).
+function formatCountdown(ms: number) {
+  const totalMin = Math.floor(ms / 60000);
+  const days = Math.floor(totalMin / 1440);
+  const hours = Math.floor((totalMin % 1440) / 60);
+  const mins = totalMin % 60;
+  if (days >= 1) return `${days}d ${hours}h`;
+  if (hours >= 1) return `${hours}h ${mins}m`;
+  if (mins >= 1) return `${mins}m`;
+  return '<1m';
+}
+
 export default function FixtureList() {
   const supabase = createBrowserSupabase();
   const { t, lang } = useT();
@@ -20,9 +32,16 @@ export default function FixtureList() {
   const [userId, setUserId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [filter, setFilter] = useState('All');
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     load();
+  }, []);
+
+  // Tick every 30s so the per-match "Locks in …" countdowns stay current.
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(id);
   }, []);
 
   async function load() {
@@ -94,6 +113,7 @@ export default function FixtureList() {
           prediction={predictions[fixture.id]}
           disabled={isPredictionLocked(fixture.kickoff_utc)}
           signedIn={!!userId}
+          now={now}
           onSave={savePrediction}
         />
       ))}
@@ -101,11 +121,12 @@ export default function FixtureList() {
   );
 }
 
-function PredictionCard({ fixture, prediction, disabled, signedIn, onSave }: {
+function PredictionCard({ fixture, prediction, disabled, signedIn, now, onSave }: {
   fixture: Fixture;
   prediction?: Prediction;
   disabled: boolean;
   signedIn: boolean;
+  now: number;
   onSave: (fixture: Fixture, home: number, away: number) => void;
 }) {
   const { t, lang } = useT();
@@ -117,7 +138,9 @@ function PredictionCard({ fixture, prediction, disabled, signedIn, onSave }: {
     setAway(prediction?.predicted_away_score ?? 0);
   }, [prediction?.predicted_home_score, prediction?.predicted_away_score]);
 
-  const locked = isPredictionLocked(fixture.kickoff_utc);
+  const lockAt = new Date(fixture.kickoff_utc).getTime() - 60 * 60 * 1000;
+  const msToLock = lockAt - now;
+  const locked = msToLock <= 0;
   const actual = fixture.status === 'final' ? `${fixture.home_score}-${fixture.away_score}` : null;
   const homeName = translateTeam(fixture.home_team, lang);
   const awayName = translateTeam(fixture.away_team, lang);
@@ -158,6 +181,7 @@ function PredictionCard({ fixture, prediction, disabled, signedIn, onSave }: {
         {prediction && <span className="pill">{t('fx.yourPick')}: {prediction.predicted_home_score}-{prediction.predicted_away_score}</span>}
         {actual && <span className="pill pill-good">{t('fx.final')}: {actual}</span>}
         {fixture.status === 'final' && prediction && <span className={`pill ${prediction.points > 0 ? 'pill-good' : ''}`}>{t('fx.points')}: {prediction.points}</span>}
+        {!locked && fixture.status !== 'final' && <span className="pill">⏳ {t('fx.locksIn')} {formatCountdown(msToLock)}</span>}
         {locked && fixture.status !== 'final' && <span className="pill pill-warn">🔒 {t('fx.locked')}</span>}
       </div>
       <p>{fixture.venue_city}, {translateTeam(fixture.venue_country ?? '', lang)}. {t('fx.lockNote')}</p>
