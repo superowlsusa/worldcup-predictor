@@ -12,11 +12,19 @@ export default function AuthPanel() {
   const [email, setEmail] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [password, setPassword] = useState('');
-  const [mode, setMode] = useState<'signup' | 'signin'>('signup');
+  const [mode, setMode] = useState<'signup' | 'signin'>('signin');
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   // undefined = still checking, null = signed out, User = signed in
   const [user, setUser] = useState<User | null | undefined>(undefined);
+
+  // New-player entry points link with a "join" flag (e.g. /signin?join=1) so they
+  // land on the sign-up form; the plain "Sign in" link defaults to sign-in.
+  useEffect(() => {
+    if (typeof window !== 'undefined' && /join/i.test(window.location.search + window.location.hash)) {
+      setMode('signup');
+    }
+  }, []);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user ?? null));

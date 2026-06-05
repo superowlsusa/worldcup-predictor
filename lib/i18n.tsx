@@ -53,6 +53,7 @@ const en: Dict = {
   'auth.created': 'Account created. Check your email to confirm your address, then come back and sign in.',
   'auth.alreadyIn': 'You’re signed in and ready to play.',
   'auth.goPredict': 'Go to predictions',
+  'auth.pageTitle': 'Sign in or join',
 
   'st.title': 'League Table',
   'st.refresh': 'Refresh',
@@ -153,6 +154,7 @@ const es: Dict = {
   'auth.created': 'Cuenta creada. Revisa tu correo para confirmar tu dirección, luego vuelve e inicia sesión.',
   'auth.alreadyIn': 'Has iniciado sesión y estás listo para jugar.',
   'auth.goPredict': 'Ir a las predicciones',
+  'auth.pageTitle': 'Inicia sesión o únete',
 
   'st.title': 'Tabla de la liga',
   'st.refresh': 'Actualizar',

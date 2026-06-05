@@ -49,7 +49,7 @@ export default function FixtureList() {
   async function savePrediction(fixture: Fixture, home: number, away: number) {
     if (!userId) {
       setMessage(t('fx.signInToSaveMsg'));
-      window.location.href = '/signin';
+      window.location.href = '/signin?join=1';
       return;
     }
     if (isPredictionLocked(fixture.kickoff_utc)) {
@@ -83,7 +83,7 @@ export default function FixtureList() {
       </div>
       {!userId && (
         <div className="notice">
-          {t('fx.guestPrefix')} <a href="/signin" style={{ color: 'var(--brand)', fontWeight: 700 }}>{t('fx.guestLink')}</a> {t('fx.guestSuffix')}
+          {t('fx.guestPrefix')} <a href="/signin?join=1" style={{ color: 'var(--brand)', fontWeight: 700 }}>{t('fx.guestLink')}</a> {t('fx.guestSuffix')}
         </div>
       )}
       {message && <div className="notice">{message}</div>}

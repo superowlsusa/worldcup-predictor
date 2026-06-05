@@ -9,7 +9,7 @@ export default function SignInPage() {
     <main className="container">
       <section className="hero">
         <span className="badge">{t('home.badge')}</span>
-        <h1>{t('auth.join')}</h1>
+        <h1>{t('auth.pageTitle')}</h1>
       </section>
       <div style={{ maxWidth: 460 }}>
         <AuthPanel />
