@@ -2,14 +2,15 @@ name: Sync World Cup scores
 
 # Feeds final scores into Supabase, which recalculates the league table.
 #
-# The automatic 15-minute schedule is PAUSED until the tournament starts.
-# To turn it on (do this once the secrets below are set, near June 11):
-#   1. Add repo secrets: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, FOOTBALL_DATA_TOKEN
-#   2. Uncomment the two `schedule:` lines below.
+# Auto-runs every 15 minutes, but ONLY during the 2026 World Cup window
+# (11 Jun – 19 Jul, UTC). Outside those dates GitHub never triggers it, so it
+# switches itself on at the tournament start and off after the final — nothing
+# to enable or disable by hand.
 on:
-  # schedule:
-  #   - cron: '*/15 * * * *'
-  workflow_dispatch: {} # lets you run it manually from the Actions tab
+  schedule:
+    - cron: '*/15 * 11-30 6 *'   # June 11–30
+    - cron: '*/15 * 1-19 7 *'    # July 1–19
+  workflow_dispatch: {} # also lets you run it manually any time from the Actions tab
 
 jobs:
   sync:
