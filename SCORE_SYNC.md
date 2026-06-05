@@ -52,10 +52,12 @@ order — scores are flipped to our orientation automatically) and the **closest
 date**. Team-name spelling differences (e.g. "Korea Republic", "Türkiye", "Côte d'Ivoire")
 are handled by the alias table in `scripts/sync-scores.mjs`.
 
-### Knockout matches
-Knockout fixtures start with placeholder names ("Group A winners", etc.). The sync can only
-match them **after** you set the real team names in `/admin`. Once the bracket is known,
-update the teams there and the sync will pick those matches up.
+### Knockout matches (auto-filled)
+Knockout fixtures start with placeholder names ("Group A winners", etc.). The sync now
+**auto-fills the real team names** once the bracket is known — it matches each slot by round
+and kickoff time. If a slot is ever ambiguous (e.g. two matches within the time window), it's
+left untouched and logged so you can set it in `/admin`. So in the normal case, knockout team
+names are hands-off.
 
 ### If a match shows "⚠ No fixture matched"
 The provider used a team spelling we don't recognise yet. Add it to the `ALIASES` map in
