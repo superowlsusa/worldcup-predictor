@@ -11,6 +11,7 @@ export default function Nav() {
   const supabase = createBrowserSupabase();
   const { t, lang, setLang } = useT();
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -19,6 +20,15 @@ export default function Nav() {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user ?? null));
     return () => sub.subscription.unsubscribe();
   }, [supabase]);
+
+  // Only show the Admin link to users whose profile has is_admin = true.
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    let active = true;
+    supabase.from('profiles').select('is_admin').eq('id', user.id).single()
+      .then(({ data }) => { if (active) setIsAdmin(!!data?.is_admin); });
+    return () => { active = false; };
+  }, [user, supabase]);
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -41,7 +51,7 @@ export default function Nav() {
           <Link href="/" onClick={close}>{t('nav.predictions')}</Link>
           <Link href="/standings" onClick={close}>{t('nav.standings')}</Link>
           <Link href="/rules" onClick={close}>{t('nav.rules')}</Link>
-          <Link href="/admin" onClick={close}>{t('nav.admin')}</Link>
+          {isAdmin && <Link href="/admin" onClick={close}>{t('nav.admin')}</Link>}
           {user ? <button className="link-btn" onClick={() => { close(); signOut(); }}>{t('nav.signOut')}</button> : <Link href="/signin" onClick={close}>{t('nav.signIn')}</Link>}
           <button className="link-btn lang-toggle" onClick={() => setLang(lang === 'en' ? 'es' : 'en')} title={t('lang.label')} aria-label={t('lang.label')}>
             🌐 {lang === 'en' ? 'ES' : 'EN'}
