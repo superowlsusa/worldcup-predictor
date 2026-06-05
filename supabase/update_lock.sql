@@ -1,8 +1,8 @@
 -- Run once in the Supabase SQL Editor.
 -- Changes the prediction lock from "per match, 1 hour before kick-off" to
--- "per stage, at the kick-off of that stage's FIRST match". So all group-stage
--- predictions lock when the first group game starts, all Round-of-32 predictions
--- lock when the first R32 game starts, and so on.
+-- "per stage, 1 hour before that stage's FIRST match". So all group-stage
+-- predictions lock 1 hour before the first group game, all Round-of-32
+-- predictions lock 1 hour before the first R32 game, and so on.
 -- Safe to run on the live database (only replaces one function).
 
 create or replace function public.prevent_late_prediction()
@@ -16,8 +16,8 @@ begin
     select min(kickoff_utc) into lock_at
     from public.fixtures
     where stage = (select stage from public.fixtures where id = new.fixture_id);
-    if now() >= lock_at then
-      raise exception 'Predictions for this stage are locked — the stage has already started';
+    if now() >= lock_at - interval '1 hour' then
+      raise exception 'Predictions for this stage are locked (close 1 hour before the stage''s first match)';
     end if;
   end if;
   new.updated_at = now();

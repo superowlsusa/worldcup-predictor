@@ -43,15 +43,17 @@ export default function FixtureList() {
     return () => clearInterval(id);
   }, []);
 
-  // Each stage locks at the kickoff of its FIRST match — so every match in a
-  // stage shares one deadline (and one countdown).
+  // Each stage locks 1 hour before the kickoff of its FIRST match — so every
+  // match in a stage shares one deadline (and one countdown).
   const stageLockMs = useMemo(() => {
-    const m: Record<string, number> = {};
+    const first: Record<string, number> = {};
     for (const f of fixtures) {
       const k = new Date(f.kickoff_utc).getTime();
-      if (m[f.stage] === undefined || k < m[f.stage]) m[f.stage] = k;
+      if (first[f.stage] === undefined || k < first[f.stage]) first[f.stage] = k;
     }
-    return m;
+    const lock: Record<string, number> = {};
+    for (const s in first) lock[s] = first[s] - 60 * 60 * 1000;
+    return lock;
   }, [fixtures]);
 
   async function load() {
@@ -121,7 +123,7 @@ export default function FixtureList() {
           key={fixture.id}
           fixture={fixture}
           prediction={predictions[fixture.id]}
-          lockAt={stageLockMs[fixture.stage] ?? new Date(fixture.kickoff_utc).getTime()}
+          lockAt={stageLockMs[fixture.stage] ?? new Date(fixture.kickoff_utc).getTime() - 60 * 60 * 1000}
           signedIn={!!userId}
           now={now}
           onSave={savePrediction}
