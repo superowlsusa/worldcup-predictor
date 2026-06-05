@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createBrowserSupabase } from '@/lib/supabase-browser';
 import { Fixture, Prediction } from '@/lib/types';
-import { isPredictionLocked } from '@/lib/scoring';
 import { ensureProfile } from '@/lib/ensure-profile';
 import { useT, translateStage, translateTeam, localeFor, type Lang } from '@/lib/i18n';
 import Flag from '@/components/Flag';
@@ -38,11 +37,22 @@ export default function FixtureList() {
     load();
   }, []);
 
-  // Tick every 30s so the per-match "Locks in …" countdowns stay current.
+  // Tick every 30s so the "Locks in …" countdowns stay current.
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 30000);
     return () => clearInterval(id);
   }, []);
+
+  // Each stage locks at the kickoff of its FIRST match — so every match in a
+  // stage shares one deadline (and one countdown).
+  const stageLockMs = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const f of fixtures) {
+      const k = new Date(f.kickoff_utc).getTime();
+      if (m[f.stage] === undefined || k < m[f.stage]) m[f.stage] = k;
+    }
+    return m;
+  }, [fixtures]);
 
   async function load() {
     const { data: userData } = await supabase.auth.getUser();
@@ -71,7 +81,7 @@ export default function FixtureList() {
       window.location.href = '/signin?join=1';
       return;
     }
-    if (isPredictionLocked(fixture.kickoff_utc)) {
+    if (Date.now() >= (stageLockMs[fixture.stage] ?? Infinity)) {
       setMessage(t('fx.lockedMsg'));
       return;
     }
@@ -111,7 +121,7 @@ export default function FixtureList() {
           key={fixture.id}
           fixture={fixture}
           prediction={predictions[fixture.id]}
-          disabled={isPredictionLocked(fixture.kickoff_utc)}
+          lockAt={stageLockMs[fixture.stage] ?? new Date(fixture.kickoff_utc).getTime()}
           signedIn={!!userId}
           now={now}
           onSave={savePrediction}
@@ -121,10 +131,10 @@ export default function FixtureList() {
   );
 }
 
-function PredictionCard({ fixture, prediction, disabled, signedIn, now, onSave }: {
+function PredictionCard({ fixture, prediction, lockAt, signedIn, now, onSave }: {
   fixture: Fixture;
   prediction?: Prediction;
-  disabled: boolean;
+  lockAt: number;
   signedIn: boolean;
   now: number;
   onSave: (fixture: Fixture, home: number, away: number) => void;
@@ -138,7 +148,6 @@ function PredictionCard({ fixture, prediction, disabled, signedIn, now, onSave }
     setAway(prediction?.predicted_away_score ?? 0);
   }, [prediction?.predicted_home_score, prediction?.predicted_away_score]);
 
-  const lockAt = new Date(fixture.kickoff_utc).getTime() - 60 * 60 * 1000;
   const msToLock = lockAt - now;
   const locked = msToLock <= 0;
   const actual = fixture.status === 'final' ? `${fixture.home_score}-${fixture.away_score}` : null;
@@ -160,17 +169,17 @@ function PredictionCard({ fixture, prediction, disabled, signedIn, now, onSave }
         <div className="team">
           <span className="team-name">{homeName}</span>
           <Flag team={fixture.home_team} />
-          <input className="input score-input" type="number" min="0" inputMode="numeric" value={home} onFocus={e => e.target.select()} onChange={e => setHome(Math.max(0, Number(e.target.value) || 0))} disabled={disabled} aria-label={`${homeName} score`} />
+          <input className="input score-input" type="number" min="0" inputMode="numeric" value={home} onFocus={e => e.target.select()} onChange={e => setHome(Math.max(0, Number(e.target.value) || 0))} disabled={locked} aria-label={`${homeName} score`} />
         </div>
         <div className="vs">vs</div>
         <div className="team team-away">
           <span className="team-name">{awayName}</span>
           <Flag team={fixture.away_team} />
-          <input className="input score-input" type="number" min="0" inputMode="numeric" value={away} onFocus={e => e.target.select()} onChange={e => setAway(Math.max(0, Number(e.target.value) || 0))} disabled={disabled} aria-label={`${awayName} score`} />
+          <input className="input score-input" type="number" min="0" inputMode="numeric" value={away} onFocus={e => e.target.select()} onChange={e => setAway(Math.max(0, Number(e.target.value) || 0))} disabled={locked} aria-label={`${awayName} score`} />
         </div>
       </div>
       <div className="save-row">
-        <button className={`btn ${btnClass}`} onClick={() => onSave(fixture, home, away)} disabled={disabled}>
+        <button className={`btn ${btnClass}`} onClick={() => onSave(fixture, home, away)} disabled={locked}>
           {btnLabel}
         </button>
       </div>
