@@ -5,7 +5,7 @@ import { createBrowserSupabase } from '@/lib/supabase-browser';
 import { Standing } from '@/lib/types';
 import { useT } from '@/lib/i18n';
 
-export default function StandingsTable() {
+export default function StandingsTable({ view = 'standings_group', heading }: { view?: string; heading?: string }) {
   const supabase = createBrowserSupabase();
   const { t } = useT();
   const [rows, setRows] = useState<Standing[]>([]);
@@ -15,14 +15,15 @@ export default function StandingsTable() {
 
   useEffect(() => {
     load();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [view]);
 
   async function load() {
     const { data: userData } = await supabase.auth.getUser();
     setMyId(userData.user?.id ?? null);
     // Explicit ordering makes the rank (row position) deterministic.
     const { data, error } = await supabase
-      .from('standings')
+      .from(view)
       .select('*')
       .order('total_points', { ascending: false })
       .order('exact_scores', { ascending: false })
@@ -47,7 +48,7 @@ export default function StandingsTable() {
   return (
     <div className="card">
       <div className="row" style={{ justifyContent: 'space-between' }}>
-        <h2>{t('st.title')}</h2>
+        <h2>{heading ?? t('st.title')}</h2>
         <button className="btn secondary" onClick={load}>{t('st.refresh')}</button>
       </div>
 

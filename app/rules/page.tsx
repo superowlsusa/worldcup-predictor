@@ -20,9 +20,8 @@ export default function RulesPage() {
         <div className="card span-8">
           <h2>{t('rules.payoutTitle')}</h2>
           <div className="stack" style={{ gap: 10 }}>
-            <div className="row" style={{ gap: 12 }}><span className="pill pill-good" style={{ fontSize: 15, fontWeight: 800 }}>50%</span><span>{t('rules.payout1')}</span></div>
-            <div className="row" style={{ gap: 12 }}><span className="pill pill-good" style={{ fontSize: 15, fontWeight: 800 }}>25%</span><span>{t('rules.payout2')}</span></div>
-            <div className="row" style={{ gap: 12 }}><span className="pill pill-good" style={{ fontSize: 15, fontWeight: 800 }}>25%</span><span>{t('rules.payout3')}</span></div>
+            <div className="row" style={{ gap: 12 }}><span className="pill pill-good" style={{ fontSize: 15, fontWeight: 800 }}>$30</span><span>{t('rules.payoutGroup')}</span></div>
+            <div className="row" style={{ gap: 12 }}><span className="pill pill-good" style={{ fontSize: 15, fontWeight: 800 }}>$50</span><span>{t('rules.payoutKnockout')}</span></div>
           </div>
         </div>
       </div>
