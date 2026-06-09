@@ -8,7 +8,14 @@ import { useT, translateStage, translateTeam, localeFor, type Lang } from '@/lib
 import Flag from '@/components/Flag';
 
 function prettyDate(utc: string, lang: Lang) {
-  return new Intl.DateTimeFormat(localeFor(lang), { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(utc));
+  // Always show kickoff in US Eastern time (auto-adjusts for daylight saving),
+  // labelled ET, so every player sees the same time regardless of their location.
+  const s = new Intl.DateTimeFormat(localeFor(lang), {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'America/New_York',
+  }).format(new Date(utc));
+  return `${s} ET`;
 }
 
 // Human-friendly time remaining until the prediction lock (1h before kick-off).
