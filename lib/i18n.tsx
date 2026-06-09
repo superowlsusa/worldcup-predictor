@@ -40,6 +40,9 @@ const en: Dict = {
   'fx.btnUpdate': 'Update prediction',
   'fx.changeHint': 'You can change your prediction until 1 hour before this stage’s first match.',
   'fx.lockNote': 'Predictions lock 1 hour before this stage’s first match kicks off.',
+  'fx.seePicks': 'See everyone’s picks',
+  'fx.hidePicks': 'Hide picks',
+  'fx.noPicks': 'No predictions were made for this match.',
 
   'auth.join': 'Join the league',
   'auth.signIn': 'Sign in',
@@ -151,6 +154,9 @@ const es: Dict = {
   'fx.btnUpdate': 'Actualizar predicción',
   'fx.changeHint': 'Puedes cambiar tu predicción hasta 1 hora antes del primer partido de esta fase.',
   'fx.lockNote': 'Las predicciones se cierran 1 hora antes del primer partido de esta fase.',
+  'fx.seePicks': 'Ver predicciones de todos',
+  'fx.hidePicks': 'Ocultar predicciones',
+  'fx.noPicks': 'No se hicieron predicciones para este partido.',
 
   'auth.join': 'Únete a la liga',
   'auth.signIn': 'Iniciar sesión',

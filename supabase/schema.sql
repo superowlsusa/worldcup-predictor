@@ -155,6 +155,16 @@ order by total_points desc, exact_scores desc, correct_outcomes desc;
 grant select on public.standings_group to anon, authenticated;
 grant select on public.standings_knockout to anon, authenticated;
 
+-- Everyone's pick for a fixture, revealed only once that fixture has kicked off.
+create or replace view public.revealed_predictions as
+select p.fixture_id, p.user_id, pr.display_name,
+  p.predicted_home_score, p.predicted_away_score, p.points
+from public.predictions p
+join public.profiles pr on pr.id = p.user_id
+join public.fixtures f on f.id = p.fixture_id
+where f.kickoff_utc <= now();
+grant select on public.revealed_predictions to anon, authenticated;
+
 alter table public.profiles enable row level security;
 alter table public.fixtures enable row level security;
 alter table public.predictions enable row level security;
@@ -172,7 +182,8 @@ drop policy if exists "admins manage fixtures" on public.fixtures;
 create policy "admins manage fixtures" on public.fixtures for all using (exists (select 1 from public.profiles where id = auth.uid() and is_admin = true));
 
 drop policy if exists "predictions readable for standings" on public.predictions;
-create policy "predictions readable for standings" on public.predictions for select using (true);
+drop policy if exists "users read own predictions" on public.predictions;
+create policy "users read own predictions" on public.predictions for select using (auth.uid() = user_id);
 drop policy if exists "users insert own predictions" on public.predictions;
 create policy "users insert own predictions" on public.predictions for insert with check (auth.uid() = user_id);
 drop policy if exists "users update own predictions" on public.predictions;

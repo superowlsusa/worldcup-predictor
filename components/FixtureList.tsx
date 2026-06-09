@@ -126,6 +126,7 @@ export default function FixtureList() {
           lockAt={stageLockMs[fixture.stage] ?? new Date(fixture.kickoff_utc).getTime() - 60 * 60 * 1000}
           signedIn={!!userId}
           now={now}
+          myId={userId}
           onSave={savePrediction}
         />
       ))}
@@ -133,15 +134,33 @@ export default function FixtureList() {
   );
 }
 
-function PredictionCard({ fixture, prediction, lockAt, signedIn, now, onSave }: {
+function PredictionCard({ fixture, prediction, lockAt, signedIn, now, myId, onSave }: {
   fixture: Fixture;
   prediction?: Prediction;
   lockAt: number;
   signedIn: boolean;
   now: number;
+  myId: string | null;
   onSave: (fixture: Fixture, home: number, away: number) => void;
 }) {
   const { t, lang } = useT();
+  const supabase = createBrowserSupabase();
+  const kickedOff = now >= new Date(fixture.kickoff_utc).getTime();
+  const [picksOpen, setPicksOpen] = useState(false);
+  const [picks, setPicks] = useState<any[] | null>(null);
+  const [picksLoading, setPicksLoading] = useState(false);
+
+  async function togglePicks() {
+    const next = !picksOpen;
+    setPicksOpen(next);
+    if (next) {
+      setPicksLoading(true);
+      const { data } = await supabase.from('revealed_predictions').select('*').eq('fixture_id', fixture.id);
+      const sorted = (data ?? []).slice().sort((a: any, b: any) => b.points - a.points || a.display_name.localeCompare(b.display_name));
+      setPicks(sorted);
+      setPicksLoading(false);
+    }
+  }
   const [home, setHome] = useState(prediction?.predicted_home_score ?? 0);
   const [away, setAway] = useState(prediction?.predicted_away_score ?? 0);
 
@@ -196,6 +215,26 @@ function PredictionCard({ fixture, prediction, lockAt, signedIn, now, onSave }: 
         {locked && fixture.status !== 'final' && <span className="pill pill-warn">🔒 {t('fx.locked')}</span>}
       </div>
       <p>{fixture.venue_city}, {translateTeam(fixture.venue_country ?? '', lang)}. {t('fx.lockNote')}</p>
+      {kickedOff && (
+        <div className="stack" style={{ gap: 8 }}>
+          <button className="btn secondary" onClick={togglePicks}>
+            {picksOpen ? t('fx.hidePicks') : t('fx.seePicks')}{picks ? ` (${picks.length})` : ''}
+          </button>
+          {picksOpen && picksLoading && <p style={{ textAlign: 'center', margin: 0 }}>…</p>}
+          {picksOpen && !picksLoading && picks && picks.length === 0 && <p style={{ textAlign: 'center', margin: 0 }}>{t('fx.noPicks')}</p>}
+          {picksOpen && picks && picks.length > 0 && (
+            <div className="picks">
+              {picks.map((pk: any) => (
+                <div className="picks-row" key={pk.user_id}>
+                  <span className="picks-name">{pk.display_name}{pk.user_id === myId && <span className="you-tag">{t('st.you')}</span>}</span>
+                  <span className="pill">{pk.predicted_home_score}-{pk.predicted_away_score}</span>
+                  {fixture.status === 'final' && <span className={`pill ${pk.points > 0 ? 'pill-good' : ''}`}>{pk.points}</span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

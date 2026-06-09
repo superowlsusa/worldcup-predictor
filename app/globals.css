@@ -144,6 +144,11 @@ p { color: var(--muted); line-height: 1.55; }
 .me-row td { background: rgba(91,157,255,.16); }
 .me-row td:first-child { box-shadow: inset 3px 0 0 var(--brand); }
 .you-tag { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: var(--brand); color: #061224; font-size: 11px; font-weight: 800; vertical-align: middle; }
+.picks { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.picks-row { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
+.picks-row:last-child { border-bottom: 0; }
+.picks-row:nth-child(odd) { background: rgba(255,255,255,.03); }
+.picks-name { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .notice { border-left: 4px solid var(--brand); padding: 12px 14px; background: var(--panel); border-radius: 14px; color: var(--text); font-size: 14px; }
 .footer { color: var(--muted); font-size: 13px; padding: 30px 18px; text-align: center; }
