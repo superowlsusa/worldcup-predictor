@@ -243,11 +243,17 @@ async function main() {
   }
 
   // Pass 2 — final scores
-  let updated = 0, alreadyFinal = 0, unmatched = 0;
+  let updated = 0, alreadyFinal = 0, unmatched = 0, noScore = 0;
   for (const m of finished) {
-    const ph = m.score?.fullTime?.home;
-    const pa = m.score?.fullTime?.away;
-    if (ph == null || pa == null) continue;
+    // football-data sometimes marks a match FINISHED before the score is attached.
+    // Fall back to extraTime/regularTime if fullTime is missing.
+    const ph = m.score?.fullTime?.home ?? m.score?.regularTime?.home ?? null;
+    const pa = m.score?.fullTime?.away ?? m.score?.regularTime?.away ?? null;
+    if (ph == null || pa == null) {
+      console.log(`  • Finished but NO score from API yet: ${m.homeTeam?.name} vs ${m.awayTeam?.name} — score=${JSON.stringify(m.score)}`);
+      noScore++;
+      continue;
+    }
 
     const pHome = canon(m.homeTeam?.name);
     const pAway = canon(m.awayTeam?.name);
@@ -282,7 +288,8 @@ async function main() {
 
   console.log(
     `\nDone. ${DRY_RUN ? 'Would rename' : 'Renamed'}: ${renames.length} · ` +
-    `${DRY_RUN ? 'would score' : 'scored'}: ${updated} · already final: ${alreadyFinal} · unmatched: ${unmatched}`
+    `${DRY_RUN ? 'would score' : 'scored'}: ${updated} · already final: ${alreadyFinal} · ` +
+    `finished w/o score: ${noScore} · unmatched: ${unmatched}`
   );
 }
 
