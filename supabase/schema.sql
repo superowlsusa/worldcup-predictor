@@ -155,14 +155,15 @@ order by total_points desc, exact_scores desc, correct_outcomes desc;
 grant select on public.standings_group to anon, authenticated;
 grant select on public.standings_knockout to anon, authenticated;
 
--- Everyone's pick for a fixture, revealed only once that fixture has kicked off.
+-- Everyone's pick for a fixture, revealed once that fixture's STAGE is locked
+-- (1 hour before the stage's first match) — i.e. when picks can no longer change.
 create or replace view public.revealed_predictions as
 select p.fixture_id, p.user_id, pr.display_name,
   p.predicted_home_score, p.predicted_away_score, p.points
 from public.predictions p
 join public.profiles pr on pr.id = p.user_id
 join public.fixtures f on f.id = p.fixture_id
-where f.kickoff_utc <= now();
+where (select min(f2.kickoff_utc) from public.fixtures f2 where f2.stage = f.stage) - interval '1 hour' <= now();
 grant select on public.revealed_predictions to anon, authenticated;
 
 alter table public.profiles enable row level security;

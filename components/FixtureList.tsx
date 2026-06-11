@@ -152,7 +152,6 @@ function PredictionCard({ fixture, prediction, lockAt, signedIn, now, myId, onSa
 }) {
   const { t, lang } = useT();
   const supabase = createBrowserSupabase();
-  const kickedOff = now >= new Date(fixture.kickoff_utc).getTime();
   const [picksOpen, setPicksOpen] = useState(false);
   const [picks, setPicks] = useState<any[] | null>(null);
   const [picksLoading, setPicksLoading] = useState(false);
@@ -222,7 +221,7 @@ function PredictionCard({ fixture, prediction, lockAt, signedIn, now, myId, onSa
         {locked && fixture.status !== 'final' && <span className="pill pill-warn">🔒 {t('fx.locked')}</span>}
       </div>
       <p>{fixture.venue_city}, {translateTeam(fixture.venue_country ?? '', lang)}. {t('fx.lockNote')}</p>
-      {kickedOff && (
+      {locked && (
         <div className="stack" style={{ gap: 8 }}>
           <button className="btn secondary" onClick={togglePicks}>
             {picksOpen ? t('fx.hidePicks') : t('fx.seePicks')}{picks ? ` (${picks.length})` : ''}
