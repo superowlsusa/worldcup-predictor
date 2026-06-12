@@ -21,6 +21,10 @@ export default function StandingsPage() {
         <button className={tab === 'knockout' ? 'btn' : 'btn secondary'} onClick={() => setTab('knockout')}>{t('st.tabKnockout')}</button>
       </div>
 
+      <div className="notice" style={{ marginBottom: 14 }}>
+        🏆 {tab === 'group' ? t('rules.payoutGroup') : t('rules.payoutKnockout')}
+      </div>
+
       {tab === 'group'
         ? <StandingsTable key="group" view="standings_group" heading={t('st.groupTitle')} />
         : <StandingsTable key="knockout" view="standings_knockout" heading={t('st.knockoutTitle')} />}

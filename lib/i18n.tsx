@@ -98,7 +98,7 @@ const en: Dict = {
   'rules.joinTitle': 'How to join',
   'rules.joinBody': 'Two separate competitions — enter either or both. Once you’ve signed up, Zelle your entry to Copo: $30 for the group stage, $50 for the knockouts.',
   'rules.payoutTitle': 'Entry & payouts',
-  'rules.payoutGroup': 'Group stage — winner takes the pool, paid after the group games.',
+  'rules.payoutGroup': 'Group stage (paid after the group games) — 1st: $800 · 2nd: $250 · 3rd: $150. If players tie, the prize money is split equally between them.',
   'rules.payoutKnockout': 'Knockouts — winner takes the pool, paid after the final. Separate standings table.',
 
   'admin.badge': 'Admin only',
@@ -212,7 +212,7 @@ const es: Dict = {
   'rules.joinTitle': 'Cómo unirse',
   'rules.joinBody': 'Dos competiciones separadas: participa en una o en ambas. Una vez registrado, envía tu inscripción por Zelle a Copo: $30 para la fase de grupos, $50 para las eliminatorias.',
   'rules.payoutTitle': 'Inscripción y premios',
-  'rules.payoutGroup': 'Fase de grupos — el ganador se lleva el bote, pagado tras la fase de grupos.',
+  'rules.payoutGroup': 'Fase de grupos (pagado tras la fase de grupos) — 1.º: $800 · 2.º: $250 · 3.º: $150. Si hay empate, el premio se reparte en partes iguales entre los empatados.',
   'rules.payoutKnockout': 'Eliminatorias — el ganador se lleva el bote, pagado tras la final. Tabla de clasificación aparte.',
 
   'admin.badge': 'Solo administradores',
