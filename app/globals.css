@@ -107,7 +107,8 @@ p { color: var(--muted); line-height: 1.55; }
 .score-input::-webkit-outer-spin-button, .score-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
 /* Fixture / match cards */
-.fixture { display: grid; gap: 14px; margin-bottom: 14px; transition: transform .12s, border-color .12s; }
+.fixture { display: grid; gap: 14px; margin-bottom: 14px; transition: transform .12s, border-color .12s; scroll-margin-top: 80px; }
+.jump-fab { position: fixed; right: 16px; bottom: 16px; z-index: 20; padding: 13px 18px; box-shadow: 0 12px 30px rgba(0,0,0,.5); }
 .fixture:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.2); }
 .fixture-head { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
 

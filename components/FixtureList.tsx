@@ -110,6 +110,29 @@ export default function FixtureList() {
   const stages = useMemo(() => ['All', ...Array.from(new Set(fixtures.map(f => f.stage)))], [fixtures]);
   const visibleFixtures = filter === 'All' ? fixtures : fixtures.filter(f => f.stage === filter);
 
+  // The match to "jump" to: a live one (kicked off, not final, within ~2.75h),
+  // otherwise the next one to kick off.
+  const liveOrNext = useMemo(() => {
+    const live = fixtures
+      .filter(f => {
+        const k = new Date(f.kickoff_utc).getTime();
+        return k <= now && f.status !== 'final' && now - k <= 2.75 * 3600 * 1000;
+      })
+      .sort((a, b) => new Date(b.kickoff_utc).getTime() - new Date(a.kickoff_utc).getTime())[0];
+    if (live) return { fixture: live, live: true };
+    const next = [...fixtures]
+      .sort((a, b) => new Date(a.kickoff_utc).getTime() - new Date(b.kickoff_utc).getTime())
+      .find(f => new Date(f.kickoff_utc).getTime() > now);
+    return next ? { fixture: next, live: false } : null;
+  }, [fixtures, now]);
+
+  function jumpToGame() {
+    if (!liveOrNext) return;
+    setFilter('All'); // make sure the target card is rendered before scrolling
+    const id = `fixture-${liveOrNext.fixture.id}`;
+    setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+  }
+
   return (
     <div className="stack">
       <div className="row" style={{ flexWrap: 'wrap' }}>
@@ -125,6 +148,11 @@ export default function FixtureList() {
         </div>
       )}
       {message && <div className="notice">{message}</div>}
+      {liveOrNext && (
+        <button className="btn jump-fab" onClick={jumpToGame}>
+          {liveOrNext.live ? `🔴 ${t('fx.jumpLive')}` : `⏭ ${t('fx.jumpNext')}`}
+        </button>
+      )}
       {visibleFixtures.map(fixture => (
         <PredictionCard
           key={fixture.id}
@@ -187,7 +215,7 @@ function PredictionCard({ fixture, prediction, lockAt, signedIn, now, myId, onSa
   const btnLabel = !signedIn ? t('fx.btnSignInToSave') : !prediction ? t('fx.btnSave') : isDirty ? t('fx.btnUpdate') : t('fx.btnSaved');
 
   return (
-    <div className="card fixture">
+    <div className="card fixture" id={`fixture-${fixture.id}`}>
       <div className="fixture-head">
         <span>{t('fx.match')} {fixture.match_no} · {translateStage(fixture.stage, lang)}{fixture.group_name ? ` · ${t('fx.group')} ${fixture.group_name}` : ''}</span>
         <span>{prettyDate(fixture.kickoff_utc, lang)}</span>

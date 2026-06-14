@@ -21,6 +21,8 @@ const en: Dict = {
   'footer.addToHome': 'Add this site to your iPhone or Samsung home screen and play like an app.',
 
   'fx.all': 'All',
+  'fx.jumpLive': 'Live game',
+  'fx.jumpNext': 'Next game',
   'fx.guestPrefix': 'You’re browsing as a guest.',
   'fx.guestLink': 'Sign in or create an account',
   'fx.guestSuffix': 'to save your predictions.',
@@ -135,6 +137,8 @@ const es: Dict = {
   'footer.addToHome': 'Añade este sitio a la pantalla de inicio de tu iPhone o Samsung y juega como una app.',
 
   'fx.all': 'Todos',
+  'fx.jumpLive': 'Partido en vivo',
+  'fx.jumpNext': 'Próximo partido',
   'fx.guestPrefix': 'Estás navegando como invitado.',
   'fx.guestLink': 'Inicia sesión o crea una cuenta',
   'fx.guestSuffix': 'para guardar tus predicciones.',
